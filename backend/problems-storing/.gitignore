@@ -1,0 +1,17 @@
+# Build output
+build/
+*.dSYM/
+*.o
+*.out
+
+#vscode
+.vscode/
+
+# Compiled programs left in the project folder (no file extension)
+/Echo
+/Main
+/Port
+/Problems
+
+# macOS
+.DS_Store
