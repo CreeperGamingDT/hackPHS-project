@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<meta name="theme-color" content="#17152e">
+		<title>Orbit Chat</title>
+		<link rel="stylesheet" href="styles.css">
+		<script src="script.js" defer></script>
+	</head>
+	<body>
+		<main class="chat-app">
+
+			<section class="conversation" aria-label="Chat messages">
+				<ol class="message-list" id="message-list" aria-live="polite"></ol>
+			</section>
+
+			<form class="composer" id="message-form">
+				<label class="visually-hidden" for="message-input">Write a message</label>
+				<input
+					id="message-input"
+					name="message"
+					type="text"
+					placeholder="Message the crew..."
+					autocomplete="off"
+					required
+				>
+				<button type="submit" aria-label="Send message" title="Send message">
+					<span aria-hidden="true">&#8593;</span>
+				</button>
+			</form>
+		</main>
+	</body>
+</html>
