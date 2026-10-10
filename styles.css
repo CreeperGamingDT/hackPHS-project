@@ -1,0 +1,53 @@
+html,
+body {
+	margin: 0;
+	width: 100%;
+	height: 100%;
+	overflow: hidden;
+	background: #030712;
+}
+
+body {
+	font-family: Georgia, "Times New Roman", serif;
+}
+
+.space-scene {
+	position: relative;
+	width: 100%;
+	height: 100%;
+}
+
+#constellation-canvas {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+#join-button {
+	position: absolute;
+	top: 8%;
+	left: 50%;
+	padding: 0.8rem 1.4rem;
+	border: 0;
+	border-radius: 0.25rem;
+	background: #8fd3ff;
+	color: #ffffff;
+	cursor: pointer;
+	font: inherit;
+	font-size: clamp(0.9rem, 2vw, 1.1rem);
+	opacity: 0;
+	pointer-events: none;
+	transform: translate(-50%, -0.5rem);
+	transition: opacity 1s ease, transform 1s ease;
+}
+
+#join-button.is-visible {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translate(-50%, 0);
+}
+
+#join-button:focus-visible {
+	outline: 2px solid #ffffff;
+	outline-offset: 4px;
+}
