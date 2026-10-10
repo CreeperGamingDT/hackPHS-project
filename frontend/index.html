@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#17132f">
+    <title>StarMind</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+  </head>
+  <body>
+    <main class="screen">
+      <span class="star star-one" aria-hidden="true"></span>
+      <span class="star star-two" aria-hidden="true"></span>
+      <span class="star star-three" aria-hidden="true"></span>
+      <span class="star star-four" aria-hidden="true"></span>
+
+      <section class="prompt" aria-labelledby="page-title">
+        <div class="mark" aria-hidden="true">✦</div>
+        <h1 id="page-title">StarMind</h1>
+
+        <form id="star-form" novalidate>
+          <label class="visually-hidden" for="problem">Enter your problem in 2-5 words</label>
+          <input
+            id="problem"
+            name="problem"
+            type="text"
+            placeholder="Enter your problem in 2-5 words"
+            autocomplete="off"
+            aria-describedby="problem-error"
+          >
+          <p class="error" id="problem-error" aria-live="polite"></p>
+          <button type="submit">Create your star</button>
+        </form>
+      </section>
+    </main>
+  </body>
+</html>
