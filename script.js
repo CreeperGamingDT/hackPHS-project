@@ -5,13 +5,19 @@ const FALLBACK_STAR_COUNT = 8;
 const SCENE_DROP = 56;
 const STAR_SIZE = 7;
 const LINE_COLOR = "#fff"
+const LINE_SIZE = 2;
 
 const canvas = document.querySelector("#constellation-canvas");
 const joinButton = document.querySelector("#join-button");
+const tooltip = document.querySelector("#star-tooltip");
+const problemText = document.querySelector("#star-problem");
+const ownerText = document.querySelector("#star-owner");
 let stars = [];
 let animationStart = 0;
 let canvasWidth = 0;
 let canvasHeight = 0;
+let sceneOffset = 0;
+let activeStar = null;
 
 const SAMPLE_PROBLEMS = [
   "I failed my math test and I don't know how to improve.",
@@ -25,7 +31,7 @@ const SAMPLE_PROBLEMS = [
 ]
 
 
-if (!canvas || !joinButton) {
+if (!canvas || !joinButton || !tooltip || !problemText || !ownerText) {
   throw new Error("The constellation scene could not be initialized.");
 }
 
@@ -46,6 +52,15 @@ function getStarCount() {
 }
 
 function createStars(count) {
+  const positions = createStarPositions(count);
+  return positions.map((position) => ({
+    ...position,
+    problem: SAMPLE_PROBLEMS[Math.floor(Math.random() * SAMPLE_PROBLEMS.length)],
+    user_id: Math.floor(Math.random() * 10000),
+  }));
+}
+
+function createStarPositions(count) {
   const random = createSeededRandom(count * 7919);
   const horizontalPadding = Math.min(canvasWidth * 0.12, 160);
   const top = Math.max(canvasHeight * 0.25, 150);
@@ -55,6 +70,23 @@ function createStars(count) {
     x: horizontalPadding + random() * Math.max(canvasWidth - horizontalPadding * 2, 1),
     y: top + random() * Math.max(bottom - top, 1),
   }));
+}
+
+function repositionStars() {
+  const positions = createStarPositions(stars.length);
+  stars.forEach((star, index) => {
+    star.x = positions[index].x;
+    star.y = positions[index].y;
+  });
+}
+
+function colorForUser(userId) {
+  let hash = 2166136261;
+  for (const character of String(userId)) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return 220 + (hash >>> 0) % 61;
 }
 
 function createSeededRandom(seed) {
@@ -89,7 +121,59 @@ function resizeCanvas() {
   canvas.style.width = `${canvasWidth}px`;
   canvas.style.height = `${canvasHeight}px`;
   context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  stars = createStars(stars.length || getStarCount());
+  if (stars.length > 0) {
+    repositionStars();
+  }
+}
+
+function getStarAtPoint(x, y) {
+  return stars.find((star) => {
+    const distanceX = x - star.x;
+    const distanceY = y - (star.y + sceneOffset);
+    return Math.hypot(distanceX, distanceY) <= STAR_SIZE * 2.5;
+  });
+}
+
+function updateTooltipPosition() {
+  if (!activeStar) {
+    return;
+  }
+
+  tooltip.style.left = `${activeStar.x}px`;
+  tooltip.style.top = `${activeStar.y + sceneOffset - STAR_SIZE}px`;
+}
+
+function showTooltip(star) {
+  if (!star) {
+    hideTooltip();
+    return;
+  }
+
+  if (activeStar === star && tooltip.classList.contains("is-visible")) {
+    updateTooltipPosition();
+    return;
+  }
+
+  activeStar = star;
+  problemText.textContent = `"${star.problem}"`;
+  ownerText.textContent = `Anonymous User ${star.user_id}`;
+  ownerText.style.color = `hsl(${colorForUser(star.user_id)} 78% 72%)`;
+  updateTooltipPosition();
+  tooltip.classList.remove("is-visible");
+  window.requestAnimationFrame(() => tooltip.classList.add("is-visible"));
+}
+
+function hideTooltip() {
+  activeStar = null;
+  tooltip.classList.remove("is-visible");
+}
+
+function pointerPosition(event) {
+  const bounds = canvas.getBoundingClientRect();
+  return {
+    x: event.clientX - bounds.left,
+    y: event.clientY - bounds.top,
+  };
 }
 
 function drawBackground() {
@@ -130,7 +214,7 @@ function drawLine(from, to, progress, offset) {
   const endX = from.x + (to.x - from.x) * progress;
   const endY = from.y + (to.y - from.y) * progress + offset;
   context.strokeStyle = LINE_COLOR;
-  context.lineWidth = 1.5;
+  context.lineWidth = LINE_SIZE;
   context.beginPath();
   context.moveTo(from.x, from.y + offset);
   context.lineTo(endX, endY);
@@ -146,7 +230,7 @@ function render(timestamp) {
   const revealEnd = stars.length * POP_DURATION;
   const linesEnd = revealEnd + LINE_DURATION;
   const finalProgress = Math.min(Math.max((elapsed - linesEnd) / FINAL_DURATION, 0), 1);
-  const sceneOffset = SCENE_DROP * easeInOut(finalProgress);
+  sceneOffset = SCENE_DROP * easeInOut(finalProgress);
 
   drawBackground();
 
@@ -167,6 +251,7 @@ function render(timestamp) {
     joinButton.classList.add("is-visible");
   }
 
+  updateTooltipPosition();
   window.requestAnimationFrame(render);
 }
 
@@ -178,6 +263,22 @@ function startAnimation() {
 
 joinButton.addEventListener("click", () => {
   window.alert("User has requested to create a group");
+});
+
+canvas.addEventListener("pointermove", (event) => {
+  const position = pointerPosition(event);
+  showTooltip(getStarAtPoint(position.x, position.y));
+});
+
+canvas.addEventListener("pointerdown", (event) => {
+  const position = pointerPosition(event);
+  showTooltip(getStarAtPoint(position.x, position.y));
+});
+
+canvas.addEventListener("pointerleave", (event) => {
+  if (event.pointerType === "mouse") {
+    hideTooltip();
+  }
 });
 
 window.addEventListener("resize", resizeCanvas);

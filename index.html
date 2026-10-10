@@ -9,6 +9,10 @@
 	<body>
 		<main class="space-scene">
 			<canvas id="constellation-canvas" aria-label="Animated constellation"></canvas>
+			<aside id="star-tooltip" role="status" aria-live="polite">
+				<p id="star-problem"></p>
+				<span id="star-owner"></span>
+			</aside>
 			<button id="join-button" type="button">Join constellation group</button>
 		</main>
 		<script src="script.js" defer></script>
