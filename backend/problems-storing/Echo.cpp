@@ -106,18 +106,63 @@ bool readJsonString(const string& json, const string& key, string& result){
     return false;
 }
 
-vector<string> loadProblems(){
+bool readJsonInteger(const string& json, const string& key, long long& result){
+    string quotedKey = "\"" + key + "\"";
+    size_t pos = json.find(quotedKey);
+    if (pos == string::npos) return false;
+
+    size_t i = pos + quotedKey.size();
+    while (i < json.size() && isspace((unsigned char)json[i])) i++;
+    if (i >= json.size() || json[i] != ':') return false;
+    i++;
+    while (i < json.size() && isspace((unsigned char)json[i])) i++;
+    if (i >= json.size()) return false;
+
+    size_t numberStart = i;
+    if (json[i] == '-') i++;
+    size_t digitsStart = i;
+    while (i < json.size() && isdigit((unsigned char)json[i])) i++;
+    if (i == digitsStart) return false;
+
+    try {
+        result = stoll(json.substr(numberStart, i - numberStart));
+    } catch (const invalid_argument&) {
+        return false;
+    } catch (const out_of_range&) {
+        return false;
+    }
+    return true;
+}
+
+vector<string> loadProblems(vector<long long>& userIds){
     vector<string> problems;
+    userIds.clear();
     ifstream file(PROBLEMS_FILE);
     string line;
     while (getline(file, line)) {
-        if (!line.empty()) problems.push_back(line);
+        if (line.empty()) continue;
+
+        // Only comma-separated records with a user ID are valid.
+        size_t separator = line.find(',');
+        if (separator == string::npos) continue;
+
+        try {
+            size_t parsed = 0;
+            long long userId = stoll(line.substr(0, separator), &parsed);
+            if (parsed != separator) continue;
+            problems.push_back(line.substr(separator + 1));
+            userIds.push_back(userId);
+        } catch (const invalid_argument&) {
+            continue;
+        } catch (const out_of_range&) {
+            continue;
+        }
     }
     return problems;
 }
 
 // Remember a new problem (in memory and in the file) unless it's blank or already saved
-void saveProblem(string problem, vector<string>& problems){
+void saveProblem(string problem, long long userId, vector<string>& problems, vector<long long>& userIds){
     for (char& c : problem) if (c == '\n' || c == '\r') c = ' '; // keep it on one line
     size_t start = problem.find_first_not_of(" \t");
     if (start == string::npos) return;
@@ -132,7 +177,8 @@ void saveProblem(string problem, vector<string>& problems){
     }
 
     problems.push_back(problem);
-    ofstream(PROBLEMS_FILE, ios::app) << problem << "\n";
+    userIds.push_back(userId);
+    ofstream(PROBLEMS_FILE, ios::app) << userId << "," << problem << "\n";
 }
 
 int main(){
@@ -161,7 +207,8 @@ int main(){
     if (::bind(server6, (sockaddr*)&addr6, sizeof(addr6)) < 0) { perror("bind ::1"); return 1; }
     if (listen(server4, 10) < 0 || listen(server6, 10) < 0) { perror("listen"); return 1; }
 
-    vector<string> problems = loadProblems();
+    vector<long long> userIds;
+    vector<string> problems = loadProblems(userIds);
 
     cout << "Listening on http://localhost:" << PORT << endl;
     cout << "Loaded " << problems.size() << " saved problems from " << PROBLEMS_FILE << endl;
@@ -216,8 +263,9 @@ int main(){
             sendResponse(client, "405 Method Not Allowed", "{\"error\": \"Only POST is allowed\"}");
         } else if (path == "/similar_problems") {
             string problem;
-            if (!readJsonString(body, "problem", problem)) {
-                sendResponse(client, "400 Bad Request", "{\"error\": \"Body must be JSON like {\\\"problem\\\": \\\"...\\\"}\"}");
+            long long userId;
+            if (!readJsonString(body, "problem", problem) || !readJsonInteger(body, "user_id", userId)) {
+                sendResponse(client, "400 Bad Request", "{\"error\": \"Body must be JSON like {\\\"problem\\\": \\\"...\\\", \\\"user_id\\\": 1234}\"}");
             } else {
                 set<string> traits = assignTraits(problem);
                 cout << "  traits:";
@@ -225,14 +273,17 @@ int main(){
                 cout << endl;
 
                 vector<string> similar = findSimilar(problem, problems);
-                saveProblem(problem, problems);
-
                 string json = "{\"similar_problems\": [";
                 for (size_t i = 0; i < similar.size(); i++) {
                     if (i > 0) json += ", ";
-                    json += "\"" + jsonEscape(similar[i]) + "\"";
+
+                    size_t ownerIndex = 0;
+                    while (ownerIndex < problems.size() && problems[ownerIndex] != similar[i]) ownerIndex++;
+                    long long ownerId = ownerIndex < userIds.size() ? userIds[ownerIndex] : 0;
+                    json += "{\"problem\":\"" + jsonEscape(similar[i]) + "\",\"user_id\":" + to_string(ownerId) + "}";
                 }
                 json += "]}";
+                saveProblem(problem, userId, problems, userIds);
                 sendResponse(client, "200 OK", json);
             }
         } else {
