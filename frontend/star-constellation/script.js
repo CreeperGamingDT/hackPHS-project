@@ -1,9 +1,9 @@
 import { SIMILAR_PROBLEMS_API_URL } from "../api-url.js";
 
 const POP_DURATION = 300;
-const LINE_DURATION = 1000;
+const LINE_DURATION = 500;
 const FINAL_DURATION = 1000;
-const SCENE_DROP = 56;
+const SCENE_DROP = 28;
 const STAR_SIZE = 7;
 const LINE_COLOR = "#fff"
 const LINE_SIZE = 2;
@@ -145,7 +145,7 @@ function showTooltip(star) {
 
   activeStar = star;
   problemText.textContent = `"${star.problem}"`;
-  ownerText.textContent = `Anonymous User ${star.user_id}`;
+  ownerText.textContent = star.user_id === requestUserId ? `You` : `Anonymous User ${star.user_id}`;
   ownerText.style.color = `hsl(${colorForUser(star.user_id)} 78% 72%)`;
   updateTooltipPosition();
   tooltip.classList.remove("is-visible");
