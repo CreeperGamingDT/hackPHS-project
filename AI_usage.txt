@@ -1,0 +1,166 @@
+This file is how we used Generative Artificial Intelligence in the creation of our project
+
+Creating Similar Problems API endpoint
+Asked Claude to create an endpoint that will return similar problems and who’s user it was (only their ID) to the users problem
+Initial prompt:
+
+Create an endpoint that accepts a POST body request containing
+{“problem”: “I’m stressed about my math test”}
+And assigns various traits such as
+[“school”, “study”, “math”, “test”]
+and responds with a list of similar problems in the format
+{
+	“similar_problems”: [
+		“I’m scared to take my SAT”,
+“I failed my math test”,
+	…
+]
+}
+If there are no similar problems, return
+{
+	“similar_problems”: []
+}
+
+
+The problems should store a list like
+[
+{
+“problem”: “I’m scared to take my SAT”,
+“traits”: [“school”,”SAT”,”study”], 
+},
+{
+“problem”: “I failed my math test”,
+“traits”: [“school”,”math”,”bad_grade”], 
+},
+]
+
+There should be a set amount of traits, so that we can easily compare each trait to different problems
+
+
+Follow up prompt:
+
+Can you make the endpoint accept a user ID ("user_id") and also return the user assigned to each similar problem (now each item is
+{
+    "problem": "I am nervous to take my math exam",
+    "user_id": 1234,
+}
+) 
+
+Creating User conversation backend
+Asked Github Copilot to plan and implement the user conversation backend using a docker container running postgreSQL, and Python + FastAPI using hardcoded sample data.
+Our initial prompt:
+
+Using an SQL database, implement the backend for a chat interface
+
+Requirements:
+A GET request at /get?conversation_id=67890 which returns a list of messages
+[
+	{
+		“date”: “YYYY-MM-DDTHH:mm:ssZ ”,
+		“user_id”: 12345,
+		“content”: “Hello everybody!”,
+		
+}
+]
+
+a POST request at /send containing
+{
+	“message”: “content”,
+	“user_id”: 12345,
+	“conversation_id”: 67890,
+}
+Creating frontend User conversation UI
+Asked Github Copilot to plan and implement a chat app styled interface for our chat conversation using specific requirements.
+Initial Prompt:
+
+Design theme: Space
+Color palette: Purple, blue, White
+Create a simple chat interface where the active user is grey while every other user is a random color created from their ID.
+The chat messages will be hardcoded in JS and stored in a list like
+[
+	{
+		“date”: “YYYY-MM-DDTHH:mm:ssZ ”,
+		“user_id”: 12345,
+		“content”: “Hello everybody!”,
+		
+}
+]
+The user should be able to send a message, but it will not do anything besides alert “You sent: “ + user_message
+
+Follow up prompt:
+
+In the top right of the chat app, add an "Fixed your problem? X" button with fixed positioning so it stays in the same spot on scroll.
+It should be in the top-right of <main>, not the body. 
+Onclick, it should navigate to /fix-problem/?problem_id=1234 where problem_id is a hardcoded temporary value as 1234]
+
+
+Creating frontend Homepage UI
+Asked Github Copilot to plan and implement a mobile styled UI for our homepage using specific requirements.
+
+Our initial prompt:
+
+Implement a web app UI meant for mobile in HTML, CSS, and JS. Do not overcomplicate it, use simple flat colors and font.
+Design theme: Space
+
+Color palette: Purple, blue, White
+
+Design a mobile app UI containing a title, an input and a button
+
+Input: “Enter your problem in 2-5 words”
+
+Button: “Create your star”
+
+Creating star connecting constellations UI
+Asked Github Copilot to create a smooth constellation animation where random stars are connected by lines.
+Each star also is assigned a unique problem by its user that reveals as a tooltip on hover
+
+Initial prompt:
+Create a smooth animation in HTML + JS + CSS where n amount of stars (requested by the user on page load using prompt()) are animated into a constellation.
+
+Firstly, the stars are popped into view (sequentially based on how its stored in the array) taking 0.3 seconds each with 0 seconds between each other
+
+After they all pop into view, lines connecting them (Ex. item 1 connects to item 2, item 2 connects to item 3, and item 3 connects to item 1), smoothly grow between the points over 1 seconds.
+
+Lastly, the stars/the constellation moves down (ease-in-out) over 1 second while a button above them fades in over 1 second with the content “Join constellation group”
+
+Each star is a simple 2d circle and each line is a simple 2d line
+
+The button is a simple light blue with a simple white font with no border. It currently does not do anything besides run alert(“User has requested to create a group”)
+
+Each star is in the format
+{
+	“x”: 123,
+	“y”: 456,
+}
+And they connect to the next item in the list (or the first if its the last item)
+
+Follow up prompt:
+
+Can you add 2 new keys to each star "problem" and "user_id" with a random problem from the SAMPLE_PROBLEMS and a random id (0-9999). The problem and user_id will not change on screen resize. 
+
+When the user hovers or taps on a star, text will slide in bottom-top and fade in over 300 ms above the star with the content of the stars "problem" and the text "Anonymous User " + user_id below it in. The problem text is light gray in quotes and the problem owner user text is a color derived from this function
+function colorForUser(userId) {
+let hash = 2166136261; 
+for (const character of String(userId)) {
+    hash ^= character.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+} 
+return 220 + (hash >>> 0) % 61;
+} 
+
+README.md document
+Created basic documentation for our project and instructions for setting up the project.
+
+
+Initital Prompt:
+
+Create a README for steps needed to run each part of the project
+
+Follow up Prompt:
+
+Change the psql setup to use docker
+Integration
+Github Copilot questions on how to merge git branches
+Questions on Database
+Github Copilot questions on how to reset the database to its initial sample data
+
