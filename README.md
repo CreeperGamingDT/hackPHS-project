@@ -10,6 +10,9 @@ HackPHS 2026 project. The project is made up of:
 - **Chat service** in [`./backend/chat-interface/`](./backend/chat-interface/), a
   FastAPI service backed by PostgreSQL.
 
+## Demo link
+[Link](https://curly-space-waddle-vxvw9vxwqvjcwjxr-5502.app.github.dev/frontend/)
+This link will not be available 24/7, but when we run our codespace, it will be available
 
 ## Prerequisites
 
