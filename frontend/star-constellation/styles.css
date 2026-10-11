@@ -26,6 +26,9 @@ body {
 #star-tooltip {
 	position: absolute;
 	z-index: 2;
+	box-sizing: border-box;
+	width: max-content;
+	min-width: min(12rem, calc(100vw - 2rem));
 	max-width: min(20rem, calc(100vw - 2rem));
 	padding: 0.7rem 0.9rem;
 	border: 1px solid rgba(173, 218, 255, 0.35);
@@ -33,15 +36,20 @@ body {
 	background: rgba(3, 7, 18, 0.92);
 	box-shadow: 0 0 1rem rgba(96, 183, 255, 0.18);
 	color: #d4d9e3;
+	overflow-wrap: anywhere;
 	opacity: 0;
 	pointer-events: none;
-	transform: translate(-50%, calc(-100% + 0.75rem));
+	transform: translate(-50%, var(--tooltip-offset-y, calc(-100% + 0.75rem)));
 	transition: opacity 300ms ease, transform 300ms ease;
 }
 
 #star-tooltip.is-visible {
 	opacity: 1;
-	transform: translate(-50%, -100%);
+	transform: translate(-50%, var(--tooltip-offset-y, -100%));
+}
+
+#star-tooltip.is-below {
+	--tooltip-offset-y: 0.75rem;
 }
 
 #star-problem {

@@ -13,6 +13,7 @@ const joinButton = document.querySelector("#join-button");
 const tooltip = document.querySelector("#star-tooltip");
 const problemText = document.querySelector("#star-problem");
 const ownerText = document.querySelector("#star-owner");
+const scene = canvas?.parentElement;
 let stars = [];
 let animationStart = 0;
 let canvasWidth = 0;
@@ -31,7 +32,7 @@ let activeStar = null;
 */
 
 
-if (!canvas || !joinButton || !tooltip || !problemText || !ownerText) {
+if (!canvas || !joinButton || !tooltip || !problemText || !ownerText || !scene) {
   throw new Error("The constellation scene could not be initialized.");
 }
 
@@ -128,8 +129,31 @@ function updateTooltipPosition() {
     return;
   }
 
-  tooltip.style.left = `${activeStar.x}px`;
-  tooltip.style.top = `${activeStar.y + sceneOffset - STAR_SIZE}px`;
+  const sceneBounds = scene.getBoundingClientRect();
+  const edgePadding = 0.75 * 16;
+  const anchorX = activeStar.x;
+  const anchorY = activeStar.y + sceneOffset - STAR_SIZE;
+
+  tooltip.classList.remove("is-below");
+  tooltip.style.left = `${anchorX}px`;
+  tooltip.style.top = `${anchorY}px`;
+
+  if (tooltip.getBoundingClientRect().top < edgePadding) {
+    tooltip.classList.add("is-below");
+  }
+
+  const tooltipBounds = tooltip.getBoundingClientRect();
+  const minLeft = sceneBounds.left + edgePadding;
+  const maxRight = sceneBounds.right - edgePadding;
+  let horizontalOffset = 0;
+
+  if (tooltipBounds.left < minLeft) {
+    horizontalOffset = minLeft - tooltipBounds.left;
+  } else if (tooltipBounds.right > maxRight) {
+    horizontalOffset = maxRight - tooltipBounds.right;
+  }
+
+  tooltip.style.left = `${anchorX + horizontalOffset}px`;
 }
 
 function showTooltip(star) {
