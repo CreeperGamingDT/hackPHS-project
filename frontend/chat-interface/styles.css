@@ -92,6 +92,10 @@ body {
   gap: 0.28rem;
 }
 
+.message.is-continuation {
+  margin-top: -1rem;
+}
+
 .message.is-active {
   align-self: flex-end;
 }

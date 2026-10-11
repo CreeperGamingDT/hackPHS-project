@@ -20,8 +20,10 @@ function formatTime(dateString) {
   }).format(new Date(dateString));
 }
 
-function createMessageElement(message) {
+function createMessageElement(message, previousMessage) {
   const isActiveUser = message.user_id === requestUserId;
+  const isContinuation =
+    previousMessage && previousMessage.user_id === message.user_id;
   const item = document.createElement("li");
   const meta = document.createElement("div");
   const author = document.createElement("span");
@@ -29,6 +31,9 @@ function createMessageElement(message) {
   const bubble = document.createElement("p");
 
   item.className = isActiveUser ? "message is-active" : "message";
+  if (isContinuation) {
+    item.classList.add("is-continuation");
+  }
   if (!isActiveUser) {
     item.style.setProperty("--user-hue", colorForUser(message.user_id));
   }
@@ -43,6 +48,11 @@ function createMessageElement(message) {
   bubble.textContent = message.content;
 
   meta.append(author, time);
+  if (isContinuation) {
+    meta.hidden = true;
+    author.hidden = true;
+    time.hidden = true;
+  }
   item.append(meta, bubble);
   return item;
 }
@@ -77,7 +87,9 @@ resolvedButton.addEventListener("click", () => {
 messages
   .slice()
   .sort((first, second) => new Date(first.date) - new Date(second.date))
-  .forEach((message) => messageList.append(createMessageElement(message)));
+  .forEach((message, index, sortedMessages) =>
+    messageList.append(createMessageElement(message, sortedMessages[index - 1])),
+  );
 
 messageForm.addEventListener("submit", async (event) => {
   event.preventDefault();
