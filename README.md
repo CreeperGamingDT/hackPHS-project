@@ -66,7 +66,7 @@ through the container:
 until docker exec postgres pg_isready -U postgres -d postgres; do
   sleep 1
 done
-docker exec -i postgres psql -U postgres -d postg \
+docker exec -i postgres psql -U postgres -d postgres \
   < ./backend/chat-interface/schema.sql
 ```
 
@@ -83,6 +83,23 @@ uvicorn app:app --reload --host 0.0.0.0 --port 8000
 ```
 
 The chat API is available at `http://localhost:8000`.
+
+### Reset the database to the schema sample data
+
+To permanently delete all tables and data, then recreate only the tables and
+sample rows from
+[`backend/chat-interface/schema.sql`](./backend/chat-interface/schema.sql),
+stop FastAPI first and run:
+
+```bash
+docker exec postgres psql -U postgres -d postgres \
+  -c 'DROP SCHEMA public CASCADE; CREATE SCHEMA public;'
+docker exec -i postgres psql -U postgres -d postgres \
+  < ./backend/chat-interface/schema.sql
+```
+
+This resets the existing database without removing the Docker container. The
+schema script then recreates the sample conversations and messages.
 
 
 ## Configure the frontend for local services
