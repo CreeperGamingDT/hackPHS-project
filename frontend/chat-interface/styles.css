@@ -26,7 +26,36 @@ body {
   color: var(--white);
 }
 
+.resolved-button {
+  position: fixed;
+  top: 1rem;
+  right: max(1rem, calc((100vw - 42rem) / 2 + 1rem));
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.55rem 0.75rem;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+  color: var(--white);
+  cursor: pointer;
+  font: inherit;
+  font-size: 0.8rem;
+  box-shadow: 0 0.35rem 1rem rgb(0 0 0 / 20%);
+}
+
+.resolved-button:hover {
+  background: #2a2750;
+}
+
+.resolved-button:focus-visible {
+  outline: 3px solid #b9c0ff;
+  outline-offset: 2px;
+}
+
 .chat-app {
+  position: relative;
   display: flex;
   width: min(100%, 42rem);
   height: 100vh;

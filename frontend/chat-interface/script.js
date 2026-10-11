@@ -68,6 +68,11 @@ messages = await fetch(
 const messageList = document.querySelector("#message-list");
 const messageForm = document.querySelector("#message-form");
 const messageInput = document.querySelector("#message-input");
+const resolvedButton = document.querySelector(".resolved-button");
+
+resolvedButton.addEventListener("click", () => {
+  location.href = "/frontend/?utm_source=chat_interface";
+});
 
 messages
   .slice()
