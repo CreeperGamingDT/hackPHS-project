@@ -12,7 +12,8 @@ HackPHS 2026 project. The project is made up of:
 
 ## Demo link
 [Link](https://curly-space-waddle-vxvw9vxwqvjcwjxr-5502.app.github.dev/frontend/)
-This link will not be available 24/7, but when we run our codespace, it will be available
+
+This link will not be available 24/7, but it will be when we run our codespace server
 
 ## Prerequisites
 
