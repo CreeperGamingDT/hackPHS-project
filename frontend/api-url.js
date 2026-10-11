@@ -1,0 +1,2 @@
+export const SIMILAR_PROBLEMS_API_URL = "https://curly-space-waddle-vxvw9vxwqvjcwjxr-5000.app.github.dev/similar_problems";
+export const CONVERSATION_MESSAGES_API_URL = "https://curly-space-waddle-vxvw9vxwqvjcwjxr-8000.app.github.dev";

@@ -1,7 +1,8 @@
+import { SIMILAR_PROBLEMS_API_URL } from "../api-url.js";
+
 const POP_DURATION = 300;
 const LINE_DURATION = 1000;
 const FINAL_DURATION = 1000;
-const FALLBACK_STAR_COUNT = 8;
 const SCENE_DROP = 56;
 const STAR_SIZE = 7;
 const LINE_COLOR = "#fff"
@@ -19,16 +20,15 @@ let canvasHeight = 0;
 let sceneOffset = 0;
 let activeStar = null;
 
-const SAMPLE_PROBLEMS = [
-  "I failed my math test and I don't know how to improve.",
-  "I feel anxious about speaking in front of the class.",
-  "I don't understand the science experiment we did in class.",
-  "I need help with my reading comprehension.",
-  "I feel left out when my friends play without me.",
-  "I don't know how to solve this word problem.",
-  "I feel nervous about taking the upcoming quiz.",
-  "I need help organizing my homework assignments.",
-]
+/*returns {
+  "similar_problems": [
+    {
+      "problem": "I feel lonely and isolated.",
+      "user_id": 1234
+    },
+  ]
+}
+*/
 
 
 if (!canvas || !joinButton || !tooltip || !problemText || !ownerText) {
@@ -40,23 +40,12 @@ if (!context) {
   throw new Error("A 2D canvas context could not be created.");
 }
 
-function getStarCount() {
-  const requestedCount = Number.parseInt(
-    window.prompt("How many stars should join the constellation?", FALLBACK_STAR_COUNT),
-    10,
-  );
-
-  return Number.isInteger(requestedCount) && requestedCount > 0
-    ? requestedCount
-    : FALLBACK_STAR_COUNT;
-}
-
 function createStars(count) {
   const positions = createStarPositions(count);
-  return positions.map((position) => ({
+  return positions.map((position, i) => ({
     ...position,
-    problem: SAMPLE_PROBLEMS[Math.floor(Math.random() * SAMPLE_PROBLEMS.length)],
-    user_id: Math.floor(Math.random() * 10000),
+    problem: user_similar_problems[i].problem,
+    user_id: user_similar_problems[i].user_id,
   }));
 }
 
@@ -262,7 +251,7 @@ function startAnimation() {
 }
 
 joinButton.addEventListener("click", () => {
-  window.alert("User has requested to create a group");
+  location.href = `/frontend/chat-interface/?conversation_id=${67890/*!TEMPORARY*/}&user_id=${1234/*!TEMPORARY*/}`;
 });
 
 canvas.addEventListener("pointermove", (event) => {
@@ -282,5 +271,35 @@ canvas.addEventListener("pointerleave", (event) => {
 });
 
 window.addEventListener("resize", resizeCanvas);
-stars = createStars(getStarCount());
+const urlSearchParams = new URLSearchParams(window.location.search);
+const requestProblem =
+  urlSearchParams.get("problem") || "";
+const requestUserId = parseInt(urlSearchParams.get("user_id"),10) || 0;
+
+const user_similar_problems = await fetch(
+  SIMILAR_PROBLEMS_API_URL,
+  {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      problem: requestProblem,
+      user_id: requestUserId,
+    }),
+  }
+)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+    return response.json();
+  })
+  .then((data) => data.similar_problems || [])
+  .catch((error) => {
+    console.error("Could not load similar problems:", error);
+    return [];
+  });
+
+stars = createStars(user_similar_problems.length);
 startAnimation();

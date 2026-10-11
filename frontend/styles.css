@@ -119,37 +119,6 @@ button:active {
   line-height: 1.25rem;
 }
 
-.star {
-  position: absolute;
-  width: 0.45rem;
-  aspect-ratio: 1;
-  background: #aeb5ff;
-  clip-path: polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
-}
-
-.star-one {
-  top: 17%;
-  left: 16%;
-}
-
-.star-two {
-  top: 27%;
-  right: 13%;
-  width: 0.3rem;
-}
-
-.star-three {
-  right: 19%;
-  bottom: 19%;
-  width: 0.55rem;
-}
-
-.star-four {
-  bottom: 29%;
-  left: 12%;
-  width: 0.3rem;
-}
-
 .visually-hidden {
   position: absolute;
   width: 1px;

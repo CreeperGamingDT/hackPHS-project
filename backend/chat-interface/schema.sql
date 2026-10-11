@@ -24,9 +24,7 @@ INSERT INTO messages (conversation_id, user_id, content, created_at)
 SELECT sample.conversation_id, sample.user_id, sample.content, sample.created_at
 FROM (VALUES
     (67890::BIGINT, 12345::BIGINT, 'Hello everybody!', TIMESTAMPTZ '2026-10-10 09:00:00+00'),
-    (67890::BIGINT, 23456::BIGINT, 'Anyone free this weekend?', TIMESTAMPTZ '2026-10-10 09:01:00+00'),
-    (67891::BIGINT, 34567::BIGINT, 'Project kickoff is at 10.', TIMESTAMPTZ '2026-10-10 09:05:00+00'),
-    (67891::BIGINT, 12345::BIGINT, 'Thanks, see you there.', TIMESTAMPTZ '2026-10-10 09:06:00+00')
+    (67890::BIGINT, 23456::BIGINT, 'Anyone free to study this weekend?', TIMESTAMPTZ '2026-10-10 09:01:00+00'),
 ) AS sample(conversation_id, user_id, content, created_at)
 WHERE NOT EXISTS (
     SELECT 1

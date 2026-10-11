@@ -23,7 +23,7 @@ form.addEventListener("submit", (event) => {
     problemInput.focus();
     return;
   }
-  alert("Form: " + problemInput.value);
+  location.href = `star-constellation/?problem=${encodeURIComponent(problemInput.value)}&user_id=${1234/*!TEMPORARY*/}`;
 
   clearError();
 });

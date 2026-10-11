@@ -45,6 +45,9 @@ void sendResponse(int client, const string& status, const string& body){
     string response =
         "HTTP/1.1 " + status + "\r\n"
         "Content-Type: application/json\r\n"
+        "Access-Control-Allow-Origin: *\r\n"
+        "Access-Control-Allow-Methods: POST, OPTIONS\r\n"
+        "Access-Control-Allow-Headers: Content-Type\r\n"
         "Content-Length: " + to_string(body.size()) + "\r\n"
         "Connection: close\r\n"
         "\r\n" + body;
@@ -259,7 +262,9 @@ int main(){
 
         cout << method << " " << path << " (" << body.size() << " bytes)" << endl;
 
-        if (method != "POST") {
+        if (method == "OPTIONS") {
+            sendResponse(client, "204 No Content", "");
+        } else if (method != "POST") {
             sendResponse(client, "405 Method Not Allowed", "{\"error\": \"Only POST is allowed\"}");
         } else if (path == "/similar_problems") {
             string problem;

@@ -1,32 +1,6 @@
-const ACTIVE_USER_ID = 12345;
+import { CONVERSATION_MESSAGES_API_URL } from "../api-url.js";
 
-const messages = [
-  {
-    date: "2026-10-10T09:12:00Z",
-    user_id: 48271,
-    content: "Anyone else watching the meteor shower tonight?",
-  },
-  {
-    date: "2026-10-10T09:13:00Z",
-    user_id: ACTIVE_USER_ID,
-    content: "Absolutely. The sky should be clear out here.",
-  },
-  {
-    date: "2026-10-10T09:15:00Z",
-    user_id: 93602,
-    content: "I found a quiet spot just beyond the ridge.",
-  },
-  {
-    date: "2026-10-10T09:16:00Z",
-    user_id: 7184,
-    content: "Save me a place. Bringing the star charts!",
-  },
-  {
-    date: "2026-10-10T09:18:00Z",
-    user_id: ACTIVE_USER_ID,
-    content: "See you there in a few minutes.",
-  },
-];
+let messages = []; //loads from api, but for now it's empty
 
 function colorForUser(userId) {
   let hash = 2166136261;
@@ -47,7 +21,7 @@ function formatTime(dateString) {
 }
 
 function createMessageElement(message) {
-  const isActiveUser = message.user_id === ACTIVE_USER_ID;
+  const isActiveUser = message.user_id === requestUserId;
   const item = document.createElement("li");
   const meta = document.createElement("div");
   const author = document.createElement("span");
@@ -72,6 +46,24 @@ function createMessageElement(message) {
   item.append(meta, bubble);
   return item;
 }
+const urlparams = new URLSearchParams(window.location.search);
+
+const requestConversationId = urlparams.get("conversation_id");
+const requestUserId = parseInt(urlparams.get("user_id"));
+
+messages = await fetch(
+  `${CONVERSATION_MESSAGES_API_URL}/get?conversation_id=${requestConversationId}`,
+)
+  .then((response) => {
+    if (!response.ok) {
+      throw new Error(`Request failed: ${response.status}`);
+    }
+    return response.json();
+  })
+  .catch((error) => {
+    console.error("Could not load conversation messages:", error);
+    return [];
+  });
 
 const messageList = document.querySelector("#message-list");
 const messageForm = document.querySelector("#message-form");
@@ -82,7 +74,18 @@ messages
   .sort((first, second) => new Date(first.date) - new Date(second.date))
   .forEach((message) => messageList.append(createMessageElement(message)));
 
-messageForm.addEventListener("submit", (event) => {
+messageForm.addEventListener("submit", async (event) => {
   event.preventDefault();
-  window.alert("You sent: " + messageInput.value);
+  await fetch(`${CONVERSATION_MESSAGES_API_URL}/send`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      conversation_id: requestConversationId,
+      user_id: requestUserId,
+      message: messageInput.value,
+    }),
+  });
+  location.reload();
 });
