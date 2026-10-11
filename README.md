@@ -10,6 +10,7 @@ HackPHS 2026 project. The project is made up of:
 - **Chat service** in [`./backend/chat-interface/`](./backend/chat-interface/), a
   FastAPI service backed by PostgreSQL.
 
+
 ## Prerequisites
 
 Install the following before starting the project:
@@ -126,3 +127,6 @@ python3 -m http.server 5502
 
 Open the main page at
 [`http://localhost:5502/frontend/`](http://localhost:5502/frontend/).
+
+## Our personal comments
+The project is pretty rushed (only had 24 hours) with many hardcoded values and many security vulnerabilities such as viewing another users conversation, manually changing your user_id, and being able to send unlimited problems of any text. But the baseline idea and functionality still remains, and is useful if no one hacks our app.
