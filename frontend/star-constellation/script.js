@@ -275,7 +275,7 @@ function startAnimation() {
 }
 
 joinButton.addEventListener("click", () => {
-  location.href = `/frontend/chat-interface/?conversation_id=${67890/*!TEMPORARY*/}&user_id=${1234/*!TEMPORARY*/}`;
+  location.href = `/frontend/chat-interface/?conversation_id=${67890/*!TEMPORARY*/}&user_id=${encodeURIComponent(requestUserId)}`;
 });
 
 canvas.addEventListener("pointermove", (event) => {

@@ -81,7 +81,7 @@ const messageInput = document.querySelector("#message-input");
 const resolvedButton = document.querySelector(".resolved-button");
 
 resolvedButton.addEventListener("click", () => {
-  location.href = "/frontend/?utm_source=chat_interface";
+  location.href = `/frontend/?user_id=${encodeURIComponent(requestUserId)}&utm_source=chat_interface`;
 });
 
 messages

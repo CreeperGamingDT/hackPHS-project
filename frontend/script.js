@@ -13,6 +13,9 @@ function clearError() {
 
 problemInput.addEventListener("input", clearError);
 
+const urlSearchParams = new URLSearchParams(window.location.search);
+const requestUserId = urlSearchParams.get("user_id") || Math.round(Math.random() * 9999); // Random user_id if not provided
+
 form.addEventListener("submit", (event) => {
   event.preventDefault();
 
@@ -23,7 +26,7 @@ form.addEventListener("submit", (event) => {
     problemInput.focus();
     return;
   }
-  location.href = `star-constellation/?problem=${encodeURIComponent(problemInput.value)}&user_id=${1234/*!TEMPORARY*/}`;
+  location.href = `star-constellation/?problem=${encodeURIComponent(problemInput.value)}&user_id=${encodeURIComponent(requestUserId)}`;
 
   clearError();
 });
