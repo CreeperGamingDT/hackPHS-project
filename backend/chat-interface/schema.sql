@@ -23,8 +23,10 @@ ON CONFLICT (id) DO NOTHING;
 INSERT INTO messages (conversation_id, user_id, content, created_at)
 SELECT sample.conversation_id, sample.user_id, sample.content, sample.created_at
 FROM (VALUES
-    (67890::BIGINT, 12345::BIGINT, 'Hello everybody!', TIMESTAMPTZ '2026-10-10 09:00:00+00'),
-    (67890::BIGINT, 23456::BIGINT, 'Anyone free to study this weekend?', TIMESTAMPTZ '2026-10-10 09:01:00+00')
+    (67890::BIGINT, 0123::BIGINT, 'I am so scared to take the SAT', TIMESTAMPTZ '2026-10-10 09:00:00+00'),
+    (67890::BIGINT, 0123::BIGINT, 'Idk what I should do', TIMESTAMPTZ '2026-10-10 09:01:00+00'),
+    (67890::BIGINT, 3456::BIGINT, 'I have an exam coming up too', TIMESTAMPTZ '2026-10-10 09:02:00+00'),
+    (67890::BIGINT, 3456::BIGINT, 'I dont think Ill do well on it', TIMESTAMPTZ '2026-10-10 09:03:00+00')
 ) AS sample(conversation_id, user_id, content, created_at)
 WHERE NOT EXISTS (
     SELECT 1
